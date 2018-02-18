@@ -1,51 +1,5 @@
 package com.tanim.year71;
 
-/*
- * Copyright 2012 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.ListFragment;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
-import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -165,6 +119,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
     public void onFullscreen(boolean isFullscreen) {
         this.isFullscreen = isFullscreen;
 
+
         layout();
     }
 
@@ -257,12 +212,15 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
             adapter = new PageAdapter(getActivity(), VIDEO_LIST);
         }
 
+        @TargetApi(Build.VERSION_CODES.M)
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
+            //getListView().setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 
+            ListView v = getListView();
             videoBox = getActivity().findViewById(R.id.video_box);
-            getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            v.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             setListAdapter(adapter);
         }
 
@@ -424,6 +382,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
             implements OnInitializedListener {
 
         private YouTubePlayer player;
+
         private String videoId;
 
         public static VideoFragment newInstance() {
@@ -433,7 +392,6 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-
             initialize(DeveloperKey.DEVELOPER_KEY, this);
         }
 
@@ -494,7 +452,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
     }
 
     private static void setLayoutSize(View view, int width, int height) {
-        ViewGroup.LayoutParams params = view.getLayoutParams();
+        LayoutParams params = view.getLayoutParams();
         params.width = width;
         params.height = height;
         view.setLayoutParams(params);
@@ -509,4 +467,3 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
     }
 
 }
-
