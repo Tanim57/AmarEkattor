@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Year 71</string>
+    <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
 </resources>
