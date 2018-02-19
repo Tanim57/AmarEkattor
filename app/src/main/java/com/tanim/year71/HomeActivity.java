@@ -24,15 +24,18 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewPropertyAnimator;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,7 +84,8 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
         videoBox = findViewById(R.id.video_box);
         closeButton = findViewById(R.id.close_button);
 
-        videoBox.setVisibility(View.INVISIBLE);
+        //videoBox.setVisibility(View.VISIBLE);
+        closeButton.setVisibility(View.GONE);
 
         layout();
 
@@ -133,19 +137,25 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
         boolean isPortrait =
                 getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 
-        listFragment.getView().setVisibility(isFullscreen ? View.GONE : View.VISIBLE);
-        listFragment.setLabelVisibility(isPortrait);
-        closeButton.setVisibility(isPortrait ? View.VISIBLE : View.GONE);
+
+        //closeButton.setVisibility(isPortrait ? View.VISIBLE : View.GONE);
 
         if (isFullscreen) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            listFragment.getView().setVisibility(View.GONE);
+            listFragment.setLabelVisibility(false);
             videoBox.setTranslationY(0); // Reset any translation that was applied in portrait.
-            setLayoutSize(videoFragment.getView(), MATCH_PARENT, MATCH_PARENT);
+            setLayoutSize(videoFragment.getView(), MATCH_PARENT, WRAP_CONTENT);
             setLayoutSizeAndGravity(videoBox, MATCH_PARENT, MATCH_PARENT, Gravity.TOP | Gravity.LEFT);
-        } else if (isPortrait) {
+        } else{
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            listFragment.getView().setVisibility(View.VISIBLE);
+            listFragment.setLabelVisibility(true);
             setLayoutSize(listFragment.getView(), MATCH_PARENT, MATCH_PARENT);
             setLayoutSize(videoFragment.getView(), MATCH_PARENT, WRAP_CONTENT);
             setLayoutSizeAndGravity(videoBox, MATCH_PARENT, WRAP_CONTENT, Gravity.BOTTOM);
-        } else {
+        } /*else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             videoBox.setTranslationY(0); // Reset any translation that was applied in portrait.
             int screenWidth = dpToPx(getResources().getConfiguration().screenWidthDp);
             setLayoutSize(listFragment.getView(), screenWidth / 4, MATCH_PARENT);
@@ -153,7 +163,11 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
             setLayoutSize(videoFragment.getView(), videoWidth, WRAP_CONTENT);
             setLayoutSizeAndGravity(videoBox, videoWidth, WRAP_CONTENT,
                     Gravity.RIGHT | Gravity.CENTER_VERTICAL);
-        }
+            *//*videoBox.setTranslationY(0); // Reset any translation that was applied in portrait.
+            setLayoutSize(videoFragment.getView(), MATCH_PARENT, WRAP_CONTENT);
+            setLayoutSizeAndGravity(videoBox, MATCH_PARENT, MATCH_PARENT, Gravity.TOP | Gravity.LEFT);
+*//*
+        }*/
     }
 
     public void onClickClose(@SuppressWarnings("unused") View view) {
@@ -193,13 +207,18 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
         private static final List<VideoEntry> VIDEO_LIST;
         static {
             List<VideoEntry> list = new ArrayList<VideoEntry>();
-            list.add(new VideoEntry("Dipannita", "Bph709EqnHk"));
-            list.add(new VideoEntry("GMail Tap", "1KhZKNZO8mQ"));
-            list.add(new VideoEntry("Chrome Multitask", "UiLSiqyDf4Y"));
-            list.add(new VideoEntry("Google Fiber", "re0VRK6ouwI"));
-            list.add(new VideoEntry("Autocompleter", "blB_X38YSxQ"));
+            list.add(new VideoEntry("Bangla Song \"Dipannita\"", "Bph709EqnHk"));
+            list.add(new VideoEntry("Kolkata | Full Video Song | PRAKTAN | Anupam Roy | Shreya Ghoshal | Prosenjit & Rituparna", "YmIhZCNXfJE"));
+            list.add(new VideoEntry("কেউ কথা রাখে নি (Keu kotha rakhe ni) | সুনীল গঙ্গোপাধ্যায় | Medha Bandopadhyay recitation", "nhrOuQYU8XI"));
+            list.add(new VideoEntry("Deyale Deyale | Minar | Tomar Amar Prem | Siam | Ognila | Mizanur Rahman Aryan |Bangla New Song 2017", "XChdfPIvoIo"));
+            list.add(new VideoEntry("কেউ কথা রাখে নি (Keu kotha rakhe ni) | সুনীল গঙ্গোপাধ্যায় | কেউ কথা রাখে নি (Keu kotha rakhe ni) | সুনীল গঙ্গোপাধ্যায় |  Autocompleter Autocompleter Autocompleter Autocompleter Autocompleter" +
+                    "Autocompleter Autocompleter Autocompleter Autocompleter Autocompleter Autocompleter", "blB_X38YSxQ"));
             list.add(new VideoEntry("GMail Motion", "Bu927_ul_X0"));
             list.add(new VideoEntry("Translate for Animals", "3I24bSteJpw"));
+            list.add(new VideoEntry("aaaaaaaaaaaa", "Bu927_ul_X0"));
+            list.add(new VideoEntry("bbbbbbbbbbb", "3I24bSteJpw"));
+            list.add(new VideoEntry("ccccccccccc", "Bu927_ul_X0"));
+            list.add(new VideoEntry("dddddddddddddddd", "3I24bSteJpw"));
             VIDEO_LIST = Collections.unmodifiableList(list);
         }
 
@@ -221,6 +240,9 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
             ListView v = getListView();
             videoBox = getActivity().findViewById(R.id.video_box);
             v.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            VideoFragment videoFragment =
+                    (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
+            videoFragment.setVideoId("Bph709EqnHk");
             setListAdapter(adapter);
         }
 
@@ -459,10 +481,11 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
     }
 
     private static void setLayoutSizeAndGravity(View view, int width, int height, int gravity) {
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) view.getLayoutParams();
+        //FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
         params.width = width;
         params.height = height;
-        params.gravity = gravity;
+        //params.gravity = gravity;
         view.setLayoutParams(params);
     }
 

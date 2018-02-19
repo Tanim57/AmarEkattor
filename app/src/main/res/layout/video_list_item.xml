@@ -31,12 +31,15 @@
 
     <TextView
         android:id="@+id/text"
+        android:padding="8dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="10dp"
         android:textSize="16sp"
+        android:maxLines="3"
+        android:ellipsize="end"
+        android:ems="3"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/colorPrimary"/>
 
