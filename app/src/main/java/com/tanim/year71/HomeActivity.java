@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +32,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewPropertyAnimator;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -252,6 +250,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
                     (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
             videoFragment.setVideoId(videoId);
 
+
             // The videoBox is INVISIBLE if no video was previously selected, so we need to show it now.
             if (videoBox.getVisibility() != View.VISIBLE) {
                 if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -315,7 +314,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
         public void setLabelVisibility(boolean visible) {
             labelsVisible = visible;
             for (View view : entryViews) {
-                view.findViewById(R.id.text).setVisibility(visible ? View.VISIBLE : View.GONE);
+                view.findViewById(R.id.video_name).setVisibility(visible ? View.VISIBLE : View.GONE);
             }
         }
 
@@ -360,7 +359,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
                     loader.setVideo(entry.videoId);
                 }
             }
-            TextView label = ((TextView) view.findViewById(R.id.text));
+            TextView label = ((TextView) view.findViewById(R.id.video_name));
             label.setText(entry.text);
             label.setVisibility(labelsVisible ? View.VISIBLE : View.GONE);
             return view;

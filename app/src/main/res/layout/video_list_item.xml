@@ -19,6 +19,7 @@
     android:layout_height="96dp"
     android:orientation="horizontal"
     android:gravity="center"
+    android:padding="8dp"
     android:background="?android:attr/activatedBackgroundIndicator">
 
     <com.google.android.youtube.player.YouTubeThumbnailView
@@ -26,21 +27,36 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
-        android:scaleType="centerInside" />
-
-    <TextView
-        android:id="@+id/text"
-        android:padding="8dp"
+        android:scaleType="fitXY"/>
+    <LinearLayout
+        android:paddingLeft="8dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_gravity="center_vertical"
-        android:textSize="16sp"
-        android:maxLines="3"
-        android:ellipsize="end"
-        android:ems="3"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/colorPrimary"/>
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/video_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/colorPrimary"/>
+        <TextView
+            android:id="@+id/video_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textSize="12sp"
+            android:text="05:56"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/colorPrimary"/>
+
+    </LinearLayout>
+
+
 
 </LinearLayout>
 
