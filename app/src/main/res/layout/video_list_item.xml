@@ -16,7 +16,7 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="95dp"
+    android:layout_height="96dp"
     android:orientation="horizontal"
     android:gravity="center"
     android:background="?android:attr/activatedBackgroundIndicator">
@@ -25,9 +25,8 @@
         android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:src="@drawable/no_thumbnail"
         android:adjustViewBounds="true"
-        android:scaleType="centerInside"/>
+        android:scaleType="centerInside" />
 
     <TextView
         android:id="@+id/text"
@@ -44,3 +43,5 @@
         android:textColor="@color/colorPrimary"/>
 
 </LinearLayout>
+
+    <!--android:src="@drawable/ic_launcher_background"-->

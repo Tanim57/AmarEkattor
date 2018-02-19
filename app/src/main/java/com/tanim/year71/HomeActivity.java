@@ -231,7 +231,6 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
             adapter = new PageAdapter(getActivity(), VIDEO_LIST);
         }
 
-        @TargetApi(Build.VERSION_CODES.M)
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
@@ -249,7 +248,6 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
         @Override
         public void onListItemClick(ListView l, View v, int position, long id) {
             String videoId = VIDEO_LIST.get(position).videoId;
-
             VideoFragment videoFragment =
                     (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
             videoFragment.setVideoId(videoId);
