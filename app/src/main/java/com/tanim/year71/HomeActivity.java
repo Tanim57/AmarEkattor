@@ -80,10 +80,10 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
                 (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
 
         videoBox = findViewById(R.id.video_box);
-        closeButton = findViewById(R.id.close_button);
+        //closeButton = findViewById(R.id.close_button);
 
         //videoBox.setVisibility(View.VISIBLE);
-        closeButton.setVisibility(View.GONE);
+        //closeButton.setVisibility(View.GONE);
 
         layout();
 
@@ -143,8 +143,8 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
             listFragment.getView().setVisibility(View.GONE);
             listFragment.setLabelVisibility(false);
             videoBox.setTranslationY(0); // Reset any translation that was applied in portrait.
-            setLayoutSize(videoFragment.getView(), MATCH_PARENT, WRAP_CONTENT);
-            setLayoutSizeAndGravity(videoBox, MATCH_PARENT, MATCH_PARENT, Gravity.TOP | Gravity.LEFT);
+            setLayoutSize(videoFragment.getView(), WRAP_CONTENT, WRAP_CONTENT);
+            setLayoutSizeAndGravity(videoBox, MATCH_PARENT, WRAP_CONTENT, Gravity.TOP | Gravity.LEFT);
         } else{
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             listFragment.getView().setVisibility(View.VISIBLE);

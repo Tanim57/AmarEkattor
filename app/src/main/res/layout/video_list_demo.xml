@@ -21,31 +21,19 @@
 
     <LinearLayout
         android:id="@+id/video_box"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical"
-        android:layout_alignParentTop="true">
-
-        <ImageButton
-            android:id="@+id/close_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:src="@android:drawable/btn_dialog"
-            android:onClick="onClickClose"
-            android:visibility="gone"/>
-
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:background="@color/colorPrimaryDark">
         <fragment
             class="com.tanim.year71.HomeActivity$VideoFragment"
             android:id="@+id/video_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-
     </LinearLayout>
 
     <fragment
-
         android:layout_below="@id/video_box"
         class="com.tanim.year71.HomeActivity$VideoListFragment"
         android:id="@+id/list_fragment"
