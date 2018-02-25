@@ -1,19 +1,5 @@
 package com.tanim.year71;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
-import com.google.android.youtube.player.YouTubeApiServiceUtil;
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayer.OnFullscreenListener;
-import com.google.android.youtube.player.YouTubePlayer.OnInitializedListener;
-import com.google.android.youtube.player.YouTubePlayer.Provider;
-import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.google.android.youtube.player.YouTubeThumbnailLoader;
-import com.google.android.youtube.player.YouTubeThumbnailLoader.ErrorReason;
-import com.google.android.youtube.player.YouTubeThumbnailView;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -37,11 +23,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubeApiServiceUtil;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayer.OnFullscreenListener;
+import com.google.android.youtube.player.YouTubePlayer.OnInitializedListener;
+import com.google.android.youtube.player.YouTubePlayer.Provider;
+import com.google.android.youtube.player.YouTubePlayerFragment;
+import com.google.android.youtube.player.YouTubeThumbnailLoader;
+import com.google.android.youtube.player.YouTubeThumbnailLoader.ErrorReason;
+import com.google.android.youtube.player.YouTubeThumbnailView;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * A sample Activity showing how to manage multiple YouTubeThumbnailViews in an adapter for display
@@ -53,12 +53,18 @@ import java.util.Map;
 @TargetApi(13)
 public final class HomeActivity extends Activity implements OnFullscreenListener {
 
-    /** The duration of the animation sliding up the video in portrait. */
+    /**
+     * The duration of the animation sliding up the video in portrait.
+     */
     private static final int ANIMATION_DURATION_MILLIS = 300;
-    /** The padding between the video list and the video in landscape orientation. */
+    /**
+     * The padding between the video list and the video in landscape orientation.
+     */
     private static final int LANDSCAPE_VIDEO_PADDING_DP = 5;
 
-    /** The request code when calling startActivityForResult to recover from an API service error. */
+    /**
+     * The request code when calling startActivityForResult to recover from an API service error.
+     */
     private static final int RECOVERY_DIALOG_REQUEST = 1;
 
     private VideoListFragment listFragment;
@@ -145,7 +151,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
             videoBox.setTranslationY(0); // Reset any translation that was applied in portrait.
             setLayoutSize(videoFragment.getView(), WRAP_CONTENT, WRAP_CONTENT);
             setLayoutSizeAndGravity(videoBox, MATCH_PARENT, WRAP_CONTENT, Gravity.TOP | Gravity.LEFT);
-        } else{
+        } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             listFragment.getView().setVisibility(View.VISIBLE);
             listFragment.setLabelVisibility(true);
@@ -167,6 +173,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
 *//*
         }*/
     }
+
 
     public void onClickClose(@SuppressWarnings("unused") View view) {
         listFragment.getListView().clearChoices();
@@ -203,6 +210,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
     public static final class VideoListFragment extends ListFragment {
 
         private static final List<VideoEntry> VIDEO_LIST;
+
         static {
             List<VideoEntry> list = new ArrayList<VideoEntry>();
             list.add(new VideoEntry("Bangla Song \"Dipannita\"", "Bph709EqnHk"));
