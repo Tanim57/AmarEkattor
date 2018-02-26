@@ -444,6 +444,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
                 player.pause();
             }
         }
+        
 
         @Override
         public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean restored) {
