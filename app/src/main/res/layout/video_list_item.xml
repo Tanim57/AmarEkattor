@@ -16,10 +16,10 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="96dp"
+    android:layout_height="@dimen/list_view_size"
     android:orientation="horizontal"
     android:gravity="center"
-    android:padding="8dp"
+    android:padding="@dimen/defult_margin"
     android:background="?android:attr/activatedBackgroundIndicator">
 
     <com.google.android.youtube.player.YouTubeThumbnailView
@@ -30,18 +30,19 @@
         android:adjustViewBounds="true"
         android:scaleType="fitXY"/>
     <LinearLayout
-        android:paddingLeft="8dp"
+        android:paddingLeft="@dimen/defult_margin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingStart="8dp">
+        android:paddingStart="@dimen/defult_margin">
         <TextView
             android:id="@+id/video_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:text="No Data Found"
+            android:textSize="@dimen/default_text_size"
             android:maxLines="3"
             android:ellipsize="end"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -51,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:textSize="12sp"
+            android:textSize="@dimen/default_small_text_size"
             android:text="05:56"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/colorPrimary"/>
