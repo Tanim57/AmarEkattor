@@ -50,7 +50,6 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * The demo supports custom fullscreen and transitioning between portrait and landscape without
  * rebuffering.
  */
-@TargetApi(13)
 public final class HomeActivity extends Activity implements OnFullscreenListener {
 
     /**
