@@ -5,4 +5,13 @@ package com.tanim.year71;
  */
 
 public class VideoInfo {
+    public String mVideoId;
+    public String mVideoName;
+    public String mVideoTime;
+
+    public VideoInfo(String mVideoId, String mVideoName, String mVideoTime) {
+        this.mVideoId = mVideoId;
+        this.mVideoName = mVideoName;
+        this.mVideoTime = mVideoTime;
+    }
 }
