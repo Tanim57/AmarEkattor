@@ -24,7 +24,8 @@
 
     <com.google.android.youtube.player.YouTubeThumbnailView
         android:id="@+id/thumbnail"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
         android:src="@drawable/loading_thumbnail"
         android:adjustViewBounds="true"
@@ -32,10 +33,11 @@
     <LinearLayout
         android:paddingLeft="@dimen/defult_margin"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_gravity="center_vertical"
         android:orientation="vertical"
+        android:gravity="center_vertical"
         android:paddingStart="@dimen/defult_margin">
         <TextView
             android:id="@+id/video_name"

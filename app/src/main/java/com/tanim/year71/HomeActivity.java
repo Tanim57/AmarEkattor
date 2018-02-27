@@ -2,6 +2,7 @@ package com.tanim.year71;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ListFragment;
@@ -14,12 +15,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewPropertyAnimator;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -56,7 +62,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * The demo supports custom fullscreen and transitioning between portrait and landscape without
  * rebuffering.
  */
-public final class HomeActivity extends Activity implements OnFullscreenListener {
+public final class HomeActivity extends AppCompatActivity implements OnFullscreenListener {
 
     /**
      * The duration of the animation sliding up the video in portrait.
@@ -81,11 +87,18 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
     private boolean isFullscreen;
     private AdView mAdView;
     private ViewPager viewPager;
-    //private ViewPagerAdapter swipeAdapter;
+    private static Context mContext;
+    private ViewPagerAdapter mAdapter;
+    private MovieFragment mMoviewFragment;
+    private DocumentaryFragment mDocumentaryFragment;
+    private static VideoFragment mVideoFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        //getSupportActionBar().hide();
 
         setContentView(R.layout.video_list_demo);
 
@@ -94,6 +107,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
                 (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
 
         videoBox = findViewById(R.id.video_box);
+        mContext = getApplicationContext();
         //closeButton = findViewById(R.id.close_button);
 
         //videoBox.setVisibility(View.VISIBLE);
@@ -103,6 +117,18 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
+        mMoviewFragment = new MovieFragment(mContext);
+        mDocumentaryFragment = new DocumentaryFragment(mContext);
+
+        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+
+        setupViewPager(viewPager);
+
+        mVideoFragment = (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
+
+
         layout();
 
         //setupViewPager(viewPager);
@@ -110,40 +136,14 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
         checkYouTubeApi();
     }
 
-   /* private void setupViewPager(ViewPager viewPager) {
+    /*private void setupViewPager(ViewPager viewPager) {
         swipeAdapter.addFragment(listFragment, "ALL");
         swipeAdapter.addFragment(listFragment, "GP");
         viewPager.setAdapter(swipeAdapter);
-    }
-
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
-
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
     }*/
+
+
+
 
     private void checkYouTubeApi() {
         YouTubeInitializationResult errorReason =
@@ -197,14 +197,18 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             listFragment.getView().setVisibility(View.GONE);
             listFragment.setLabelVisibility(false);
+
             videoBox.setTranslationY(0); // Reset any translation that was applied in portrait.
             setLayoutSize(videoFragment.getView(), WRAP_CONTENT, WRAP_CONTENT);
             setLayoutSizeAndGravity(videoBox, MATCH_PARENT, WRAP_CONTENT, Gravity.TOP | Gravity.LEFT);
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            listFragment.getView().setVisibility(View.VISIBLE);
+            listFragment.getView().setVisibility(View.GONE);
             listFragment.setLabelVisibility(true);
-            setLayoutSize(listFragment.getView(), MATCH_PARENT, MATCH_PARENT);
+           /* MoviewListFragment criminalBusinessFragment = new MoviewListFragment(this);
+            getSupportFragmentManager().beginTransaction().add(R.id.layout_list, criminalBusinessFragment).commit();
+          */
+           setLayoutSize(listFragment.getView(), MATCH_PARENT, MATCH_PARENT);
             setLayoutSize(videoFragment.getView(), MATCH_PARENT, WRAP_CONTENT);
             setLayoutSizeAndGravity(videoBox, MATCH_PARENT, WRAP_CONTENT, Gravity.BOTTOM);
         } /*else {
@@ -255,7 +259,15 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
 
     /**
      * A fragment that shows a static list of videos.
+     *
+     *
      */
+
+    private void setupViewPager(ViewPager viewPager) {
+        mAdapter.addFragment(mMoviewFragment, "ALL");
+        mAdapter.addFragment(mDocumentaryFragment, "ALL");
+        viewPager.setAdapter(mAdapter);
+    }
     public static final class VideoListFragment extends ListFragment {
 
         private static final List<VideoEntry> VIDEO_LIST;
@@ -296,7 +308,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
             v.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             VideoFragment videoFragment =
                     (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
-            videoFragment.setVideoId("Bph709EqnHk");
+            videoFragment.setVideoId(VIDEO_LIST.get(0).videoId);
             setListAdapter(adapter);
         }
 
@@ -335,6 +347,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
         }
 
     }
+
 
     /**
      * Adapter for the video list. Manages a set of YouTubeThumbnailViews, including initializing each
@@ -398,6 +411,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
             // There are three cases here
             if (view == null) {
                 // 1) The view has not yet been created - we need to initialize the YouTubeThumbnailView.
+                Log.d("Checking","null view");
                 view = inflater.inflate(R.layout.video_list_item, parent, false);
                 YouTubeThumbnailView thumbnail = (YouTubeThumbnailView) view.findViewById(R.id.thumbnail);
                 thumbnail.setTag(entry.videoId);
@@ -416,7 +430,7 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
                     loader.setVideo(entry.videoId);
                 }
             }
-            TextView label = ((TextView) view.findViewById(R.id.video_name));
+            TextView label = view.findViewById(R.id.video_name);
             label.setText(entry.text);
             label.setVisibility(labelsVisible ? View.VISIBLE : View.GONE);
             return view;
@@ -444,6 +458,255 @@ public final class HomeActivity extends Activity implements OnFullscreenListener
 
             @Override
             public void onThumbnailLoaded(YouTubeThumbnailView view, String videoId) {
+
+
+            }
+
+            @Override
+            public void onThumbnailError(YouTubeThumbnailView view, ErrorReason errorReason) {
+                view.setImageResource(R.drawable.no_thumbnail);
+            }
+        }
+    }
+
+    // RecyleView
+
+    @SuppressLint("ValidFragment")
+    public static final class MovieFragment extends Fragment{
+
+        private RecyclerView mRecyclerView;
+        private VideoAdapter mAdapter;
+        private Context mContext;
+
+        public MovieFragment(Context mContext) {
+            this.mContext = mContext;
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
+
+            View view = inflater.inflate(R.layout.fragment_moview_list,container,false);
+            mRecyclerView = view.findViewById(R.id.layout_movie_list);
+
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
+            mRecyclerView.setLayoutManager(layoutManager);
+
+            mAdapter = new VideoAdapter(mContext);
+            mRecyclerView.setAdapter(mAdapter);
+
+            return view;
+        }
+    }
+
+    @SuppressLint("ValidFragment")
+    public static final class DocumentaryFragment extends Fragment{
+
+        private RecyclerView mRecyclerView;
+        private VideoAdapter mAdapter;
+        private Context mContext;
+
+        public DocumentaryFragment(Context mContext) {
+            this.mContext = mContext;
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
+
+            View view = inflater.inflate(R.layout.fragment_documentary_list,container,false);
+            mRecyclerView = view.findViewById(R.id.layout_documentary_list);
+
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
+            mRecyclerView.setLayoutManager(layoutManager);
+
+            mAdapter = new VideoAdapter(mContext);
+            mRecyclerView.setAdapter(mAdapter);
+
+            return view;
+        }
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+    }
+
+
+
+    public static final class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Holder> {
+
+        private static final List<VideoEntry> VIDEO_LIST;
+        Map<YouTubeThumbnailView, YouTubeThumbnailLoader> thumbnailViewToLoaderMap;
+        static VideoAdapter.ThumbnailListener thumbnailListener;
+        Context context;
+        boolean labelsVisible;
+
+        static {
+            List<VideoEntry> list = new ArrayList<VideoEntry>();
+            list.add(new VideoEntry("Bangla Song \"Dipannita\"", "Bph709EqnHk"));
+            list.add(new VideoEntry("Kolkata | Full Video Song | PRAKTAN | Anupam Roy | Shreya Ghoshal | Prosenjit & Rituparna", "YmIhZCNXfJE"));
+            list.add(new VideoEntry("কেউ কথা রাখে নি (Keu kotha rakhe ni) | সুনীল গঙ্গোপাধ্যায় | Medha Bandopadhyay recitation", "nhrOuQYU8XI"));
+            list.add(new VideoEntry("Deyale Deyale | Minar | Tomar Amar Prem | Siam | Ognila | Mizanur Rahman Aryan |Bangla New Song 2017", "XChdfPIvoIo"));
+            list.add(new VideoEntry("কেউ কথা রাখে নি (Keu kotha rakhe ni) | সুনীল গঙ্গোপাধ্যায় | কেউ কথা রাখে নি (Keu kotha rakhe ni) | সুনীল গঙ্গোপাধ্যায় |  Autocompleter Autocompleter Autocompleter Autocompleter Autocompleter" +
+                    "Autocompleter Autocompleter Autocompleter Autocompleter Autocompleter Autocompleter", "blB_X38YSxQ"));
+            list.add(new VideoEntry("GMail Motion", "Bu927_ul_X0"));
+            list.add(new VideoEntry("Translate for Animals", "3I24bSteJpw"));
+            list.add(new VideoEntry("aaaaaaaaaaaa", "Bu927_ul_X0"));
+            list.add(new VideoEntry("bbbbbbbbbbb", "3I24bSteJpw"));
+            list.add(new VideoEntry("ccccccccccc", "Bu927_ul_X0"));
+            list.add(new VideoEntry("dddddddddddddddd", "3I24bSteJpw"));
+            VIDEO_LIST = Collections.unmodifiableList(list);
+        }
+
+        public VideoAdapter(Context context) {
+
+            this.context = context;
+            thumbnailViewToLoaderMap = new HashMap<YouTubeThumbnailView, YouTubeThumbnailLoader>();
+            thumbnailListener = new VideoAdapter.ThumbnailListener();
+            labelsVisible = true;
+        }
+
+        public void releaseLoaders() {
+            for (YouTubeThumbnailLoader loader : thumbnailViewToLoaderMap.values()) {
+                loader.release();
+            }
+        }
+
+        @Override
+        public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(context).inflate(R.layout.video_list_item,parent,false);
+            return new Holder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final Holder holder, int position) {
+            if(holder!=null)
+            {
+                final VideoEntry entry = VIDEO_LIST.get(position);
+                holder.thumbnail.setTag(entry.videoId);
+                YouTubeThumbnailLoader loader = thumbnailViewToLoaderMap.get(holder.thumbnail);
+                if (loader == null) {
+                    // 2) The view is already created, and is currently being initialized. We store the
+                    //    current videoId in the tag.
+                    holder.thumbnail.setTag(entry.videoId);
+                } else {
+                    // 3) The view is already created and already initialized. Simply set the right videoId
+                    //    on the loader.
+                    holder.thumbnail.setImageResource(R.drawable.loading_thumbnail);
+                    loader.setVideo(entry.videoId);
+                }
+                holder.label.setText(entry.text);
+
+                holder.itemClickListener = new Holder.ItemClickListener() {
+                @Override
+                public void onItemClick() {
+                      mVideoFragment.setVideoId(entry.videoId);
+
+
+                    // The videoBox is INVISIBLE if no video was previously selected, so we need to show it now.
+                    /*if (videoBox.getVisibility() != View.VISIBLE) {
+                        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                            // Initially translate off the screen so that it can be animated in from below.
+                            videoBox.setTranslationY(videoBox.getHeight());
+                        }
+                        videoBox.setVisibility(View.VISIBLE);
+                    }
+
+                    // If the fragment is off the screen, we animate it in.
+                    if (videoBox.getTranslationY() > 0) {
+                        videoBox.animate().translationY(0).setDuration(ANIMATION_DURATION_MILLIS);
+                    }*/
+                }
+            };
+
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return VIDEO_LIST.size();
+        }
+
+        public static class Holder extends RecyclerView.ViewHolder implements View.OnClickListener {
+            ItemClickListener itemClickListener;
+            YouTubeThumbnailView thumbnail;
+            TextView label;
+
+            public Holder(View itemView) {
+                super(itemView);
+                thumbnail = (YouTubeThumbnailView) itemView.findViewById(R.id.thumbnail);
+                thumbnail.initialize(DeveloperKey.DEVELOPER_KEY, thumbnailListener);
+                label = itemView.findViewById(R.id.video_name);
+                itemView.setOnClickListener(this);
+            }
+            @Override
+            public void onClick(View v) {
+                itemClickListener.onItemClick();
+            }
+
+            interface ItemClickListener{
+                void onItemClick();
+            }
+        }
+
+
+
+        private final class ThumbnailListener implements
+                YouTubeThumbnailView.OnInitializedListener,
+                YouTubeThumbnailLoader.OnThumbnailLoadedListener {
+
+            @Override
+            public void onInitializationSuccess(
+                    YouTubeThumbnailView view, YouTubeThumbnailLoader loader) {
+                loader.setOnThumbnailLoadedListener(this);
+                thumbnailViewToLoaderMap.put(view, loader);
+                view.setImageResource(R.drawable.loading_thumbnail);
+                String videoId = (String) view.getTag();
+                loader.setVideo(videoId);
+            }
+
+            @Override
+            public void onInitializationFailure(
+                    YouTubeThumbnailView view, YouTubeInitializationResult loader) {
+                view.setImageResource(R.drawable.no_thumbnail);
+            }
+
+            @Override
+            public void onThumbnailLoaded(YouTubeThumbnailView view, String videoId) {
+
             }
 
             @Override
