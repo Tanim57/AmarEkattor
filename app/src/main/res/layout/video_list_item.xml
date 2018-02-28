@@ -15,11 +15,13 @@
   limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_layout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_view_size"
     android:orientation="horizontal"
     android:gravity="center"
     android:padding="@dimen/defult_margin"
+
     android:background="?android:attr/activatedBackgroundIndicator">
 
     <com.google.android.youtube.player.YouTubeThumbnailView
