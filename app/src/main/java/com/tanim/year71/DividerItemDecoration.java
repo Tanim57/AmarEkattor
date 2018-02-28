@@ -1,4 +1,4 @@
-package com.tanim.smsmania.ui;
+package com.tanim.year71;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,8 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-
-import com.tanim.smsmania.R;
 
 
 /**
