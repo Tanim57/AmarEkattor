@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -66,7 +67,8 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * The demo supports custom fullscreen and transitioning between portrait and landscape without
  * rebuffering.
  */
-public final class HomeActivity extends AppCompatActivity implements OnFullscreenListener,YouTubePlayer.PlayerStateChangeListener {
+public final class HomeActivity extends AppCompatActivity implements
+        OnFullscreenListener,YouTubePlayer.PlayerStateChangeListener,YouTubePlayer.PlaybackEventListener {
 
     /**
      * The duration of the animation sliding up the video in portrait.
@@ -96,6 +98,7 @@ public final class HomeActivity extends AppCompatActivity implements OnFullscree
     private MovieFragment mMoviewFragment;
     private DocumentaryFragment mDocumentaryFragment;
     private static VideoFragment mVideoFragment;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +142,9 @@ public final class HomeActivity extends AppCompatActivity implements OnFullscree
         //setupViewPager(viewPager);
 
         checkYouTubeApi();
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     /*private void setupViewPager(ViewPager viewPager) {
@@ -304,6 +310,36 @@ public final class HomeActivity extends AppCompatActivity implements OnFullscree
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
         Log.d("Player", "Error");
+    }
+
+    @Override
+    public void onPlaying() {
+        Log.d("Player", "Playing");
+    }
+
+    @Override
+    public void onPaused() {
+        Log.d("Player", "Paused");
+        if(mInterstitialAd.isLoaded())
+        {
+            mInterstitialAd.show();
+            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        }
+    }
+
+    @Override
+    public void onStopped() {
+        Log.d("Player", "Stop");
+    }
+
+    @Override
+    public void onBuffering(boolean b) {
+        Log.d("Player", "buffering"+b);
+    }
+
+    @Override
+    public void onSeekTo(int i) {
+
     }
 
     public static final class VideoListFragment extends ListFragment {
@@ -945,6 +981,7 @@ public final class HomeActivity extends AppCompatActivity implements OnFullscree
             player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
             player.setOnFullscreenListener((HomeActivity) getActivity());
             player.setPlayerStateChangeListener((HomeActivity) getActivity());
+            player.setPlaybackEventListener((HomeActivity) getActivity());
             if (!restored && videoId != null) {
                 player.cueVideo(videoId);
             }
