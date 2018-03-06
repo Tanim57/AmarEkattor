@@ -50,12 +50,29 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailLoader.ErrorReason;
 import com.google.android.youtube.player.YouTubeThumbnailView;
+import com.opencsv.CSVReader;
 
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import jxl.Cell;
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -115,6 +132,75 @@ public final class HomeActivity extends AppCompatActivity implements
 
         videoBox = findViewById(R.id.video_box);
         mContext = getApplicationContext();
+
+        InputStreamReader is = null;
+        try {
+            is = new InputStreamReader(getAssets()
+                    .open("documentary.xlsx"));
+            InputStream inputStream = getAssets().open("documentary.xlsx");
+            XSSFWorkbook  wb = new XSSFWorkbook(inputStream);
+
+            XSSFSheet sheet = wb.getSheetAt(0);
+            XSSFRow row;
+            XSSFCell cell;
+
+            Iterator rows = sheet.rowIterator();
+
+            while (rows.hasNext())
+            {
+                row=(XSSFRow) rows.next();
+                Iterator cells = row.cellIterator();
+                while (cells.hasNext())
+                {
+                    cell=(XSSFCell) cells.next();
+
+
+                    if (cell.getCellType() == XSSFCell.CELL_TYPE_STRING)
+                    {
+                        String link = cell.getStringCellValue();
+                        Log.d("Check",link.replace("https://www.youtube.com/watch?v=",""));
+                        //System.out.print(cell.getStringCellValue()+" ");
+                    }
+                    else if(cell.getCellType() == XSSFCell.CELL_TYPE_NUMERIC)
+                    {
+                        Log.d("Check",cell.getNumericCellValue()+" ");
+                        //System.out.print(cell.getNumericCellValue()+" ");
+                    }
+                    else
+                    {
+                        //U Can Handel Boolean, Formula, Errors
+                    }
+                }
+            }
+
+            //Workbook wb = Workbook.getWorkbook(inputStream);
+
+            //Sheet st = wb.getSheet(0);
+
+            /*int rows = st.getRows();
+            int columns = st.getColumns();
+            String xx="";
+            for (int i=0;i<rows;i++)
+            {
+                for (int j=0;j<columns;j++)
+                {
+                    Cell c = st.getCell(j,i);
+                    xx =xx + c.getContents();
+                    Log.d("Check",xx);
+                }
+            }*/
+
+            /*BufferedReader reader = new BufferedReader(is);
+            reader.readLine();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Log.d("Check",line);
+            }*/
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         //closeButton = findViewById(R.id.close_button);
 
         //videoBox.setVisibility(View.VISIBLE);
