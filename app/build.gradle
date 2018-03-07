@@ -34,5 +34,8 @@ dependencies {
     compile 'com.opencsv:opencsv:3.9'
     compile 'net.sourceforge.jexcelapi:jxl:2.6.12'
     compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.9'
-
+    // RxJava support for Room (use 1.1.0-alpha3 for latest alpha)
+    implementation "android.arch.persistence.room:rxjava2:1.0.0"
+    // ReactiveStreams support for LiveData
+    implementation "android.arch.lifecycle:reactivestreams:1.1.0"
 }

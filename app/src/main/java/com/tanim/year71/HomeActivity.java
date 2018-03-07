@@ -137,7 +137,7 @@ public final class HomeActivity extends AppCompatActivity implements
         try {
             is = new InputStreamReader(getAssets()
                     .open("documentary.xlsx"));
-            InputStream inputStream = getAssets().open("documentary.xlsx");
+            /*InputStream inputStream = getAssets().open("documentary.xlsx");
             XSSFWorkbook  wb = new XSSFWorkbook(inputStream);
 
             XSSFSheet sheet = wb.getSheetAt(0);
@@ -172,7 +172,7 @@ public final class HomeActivity extends AppCompatActivity implements
                     }
                 }
             }
-
+*/
             //Workbook wb = Workbook.getWorkbook(inputStream);
 
             //Sheet st = wb.getSheet(0);
@@ -778,7 +778,7 @@ public final class HomeActivity extends AppCompatActivity implements
                     // 3) The view is already created and already initialized. Simply set the right videoId
                     //    on the loader.
                     holder.thumbnail.setImageResource(R.drawable.loading_thumbnail);
-                    loader.setVideo(entry.videoId);
+                     loader.setVideo(entry.videoId);
                 }
 
                 holder.label.setText(entry.text);
@@ -1291,8 +1291,6 @@ public final class HomeActivity extends AppCompatActivity implements
         }
     }
 
-
-
     public static final class VideoEntry {
         private final String text;
         private final String videoId;
@@ -1300,15 +1298,9 @@ public final class HomeActivity extends AppCompatActivity implements
 
         public VideoEntry(String text, String videoId) {
             this.text = text;
+            videoId = videoId.replace("https://www.youtube.com/watch?v=","");
+            Log.d("Check",videoId);
             this.videoId = videoId;
-        }
-
-        public void setTubeThumbnailLoader(YouTubeThumbnailLoader tubeThumbnailLoader) {
-            this.tubeThumbnailLoader = tubeThumbnailLoader;
-        }
-
-        public YouTubeThumbnailLoader getTubeThumbnailLoader() {
-            return tubeThumbnailLoader;
         }
     }
 
