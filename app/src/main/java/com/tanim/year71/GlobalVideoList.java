@@ -3,6 +3,10 @@ package com.tanim.year71;
 import android.content.Context;
 import android.util.Log;
 
+import com.tanim.year71.database.VideoEntity;
+import com.tanim.year71.database.VideoRepository;
+import com.tanim.year71.database.VideoVideoModel;
+
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -14,69 +18,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by tanim on 2/27/18.
  */
 
 public class GlobalVideoList {
-    public static ArrayList<VideoInfo> MOVIE_LIST = new ArrayList<>();
+    //public static ArrayList<VideoInfo> MOVIE_LIST = new ArrayList<>();
     public static ArrayList<VideoInfo> DOCUMENTARY_LIST = new ArrayList<>();
     public static final List<HomeActivity.VideoEntry> VIDEO_LIST;
+    public static List<VideoEntity> MOVIE_LIST;
     static {
 
-        InputStream inputStream = null;
         List<HomeActivity.VideoEntry> list = new ArrayList<HomeActivity.VideoEntry>();
-        try {
-            inputStream = App.getContext().getAssets().open("documentary.xlsx");
-            XSSFWorkbook wb = new XSSFWorkbook(inputStream);
-            XSSFSheet sheet = wb.getSheetAt(0);
-            XSSFRow row;
-            XSSFCell cell;
-            int i = 0;
-            Iterator rows = sheet.rowIterator();
-
-            while (rows.hasNext())
-            {
-                row=(XSSFRow) rows.next();
-                Iterator cells = row.cellIterator();
-                String name = null,link;
-                while (cells.hasNext())
-                {
-                    cell=(XSSFCell) cells.next();
-                    if (i>1 && cell.getCellType() == XSSFCell.CELL_TYPE_STRING)
-                    {
-                        if(i%2==0)
-                        {
-                            name = cell.getStringCellValue();
-                        }
-                        else {
-                            link =cell.getStringCellValue();
-                            list.add(new HomeActivity.VideoEntry(name, link));
-                        }
-                        //System.out.print(cell.getStringCellValue()+" ");
-                    }
-                    else if(cell.getCellType() == XSSFCell.CELL_TYPE_NUMERIC)
-                    {
-                        //Log.d("Check",cell.getNumericCellValue()+" ");
-                        //System.out.print(cell.getNumericCellValue()+" ");
-                    }
-                    else
-                    {
-                        //U Can Handel Boolean, Formula, Errors
-                    }
-                    i++;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
-
-
-
-        
         list.add(new HomeActivity.VideoEntry("Bangla Song \"Dipannita\"", "Bph709EqnHk"));
         list.add(new HomeActivity.VideoEntry("Kolkata | Full Video Song | PRAKTAN | Anupam Roy | Shreya Ghoshal | Prosenjit & Rituparna", "YmIhZCNXfJE"));
         list.add(new HomeActivity.VideoEntry("কেউ কথা রাখে নি (Keu kotha rakhe ni) | সুনীল গঙ্গোপাধ্যায় | Medha Bandopadhyay recitation", "nhrOuQYU8XI"));

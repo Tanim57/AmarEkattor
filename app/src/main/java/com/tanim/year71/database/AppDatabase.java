@@ -14,14 +14,19 @@ import com.tanim.year71.App;
  */
 @Database(entities = {VideoEntity.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
-      public VideoDao videoDao;
       public static AppDatabase database;
-      public static AppDatabase getDatabase()
+      public abstract VideoDao videoDao();
+
+    public static AppDatabase getDatabase()
       {
           if(database == null)
           {
-              database = Room.databaseBuilder(App.getContext(),
-                      AppDatabase.class, "Video").build();
+              synchronized (AppDatabase.class)
+              {
+                  if(database==null)
+                      database = Room.databaseBuilder(App.getContext(),
+                              AppDatabase.class, "video").build();
+              }
           }
           return database;
       }

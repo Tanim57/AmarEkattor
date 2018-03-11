@@ -1,21 +1,15 @@
 package com.tanim.year71;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.ListFragment;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -27,12 +21,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewPropertyAnimator;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,29 +41,14 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailLoader.ErrorReason;
 import com.google.android.youtube.player.YouTubeThumbnailView;
-import com.opencsv.CSVReader;
+import com.tanim.year71.database.InsertMovie;
+import com.tanim.year71.database.VideoEntity;
+import com.tanim.year71.database.VideoVideoModel;
 
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import jxl.Cell;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -85,7 +61,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * rebuffering.
  */
 public final class HomeActivity extends AppCompatActivity implements
-        OnFullscreenListener,YouTubePlayer.PlayerStateChangeListener,YouTubePlayer.PlaybackEventListener {
+        OnFullscreenListener, YouTubePlayer.PlayerStateChangeListener, YouTubePlayer.PlaybackEventListener {
 
     /**
      * The duration of the animation sliding up the video in portrait.
@@ -101,7 +77,6 @@ public final class HomeActivity extends AppCompatActivity implements
      */
     private static final int RECOVERY_DIALOG_REQUEST = 1;
 
-    private VideoListFragment listFragment;
     private VideoFragment videoFragment;
 
     private View videoBox;
@@ -126,86 +101,13 @@ public final class HomeActivity extends AppCompatActivity implements
 
         setContentView(R.layout.video_list_demo);
 
-        listFragment = (VideoListFragment) getFragmentManager().findFragmentById(R.id.list_fragment);
         videoFragment =
                 (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
 
         videoBox = findViewById(R.id.video_box);
         mContext = getApplicationContext();
 
-        InputStreamReader is = null;
-        try {
-            is = new InputStreamReader(getAssets()
-                    .open("documentary.xlsx"));
-            /*InputStream inputStream = getAssets().open("documentary.xlsx");
-            XSSFWorkbook  wb = new XSSFWorkbook(inputStream);
-
-            XSSFSheet sheet = wb.getSheetAt(0);
-            XSSFRow row;
-            XSSFCell cell;
-
-            Iterator rows = sheet.rowIterator();
-
-            while (rows.hasNext())
-            {
-                row=(XSSFRow) rows.next();
-                Iterator cells = row.cellIterator();
-                while (cells.hasNext())
-                {
-                    cell=(XSSFCell) cells.next();
-
-
-                    if (cell.getCellType() == XSSFCell.CELL_TYPE_STRING)
-                    {
-                        String link = cell.getStringCellValue();
-                        Log.d("Check",link.replace("https://www.youtube.com/watch?v=",""));
-                        //System.out.print(cell.getStringCellValue()+" ");
-                    }
-                    else if(cell.getCellType() == XSSFCell.CELL_TYPE_NUMERIC)
-                    {
-                        Log.d("Check",cell.getNumericCellValue()+" ");
-                        //System.out.print(cell.getNumericCellValue()+" ");
-                    }
-                    else
-                    {
-                        //U Can Handel Boolean, Formula, Errors
-                    }
-                }
-            }
-*/
-            //Workbook wb = Workbook.getWorkbook(inputStream);
-
-            //Sheet st = wb.getSheet(0);
-
-            /*int rows = st.getRows();
-            int columns = st.getColumns();
-            String xx="";
-            for (int i=0;i<rows;i++)
-            {
-                for (int j=0;j<columns;j++)
-                {
-                    Cell c = st.getCell(j,i);
-                    xx =xx + c.getContents();
-                    Log.d("Check",xx);
-                }
-            }*/
-
-            /*BufferedReader reader = new BufferedReader(is);
-            reader.readLine();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Log.d("Check",line);
-            }*/
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        //closeButton = findViewById(R.id.close_button);
-
-        //videoBox.setVisibility(View.VISIBLE);
-        //closeButton.setVisibility(View.GONE);
-
+        new InsertMovie().execute();
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -232,15 +134,6 @@ public final class HomeActivity extends AppCompatActivity implements
         mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
-
-    /*private void setupViewPager(ViewPager viewPager) {
-        swipeAdapter.addFragment(listFragment, "ALL");
-        swipeAdapter.addFragment(listFragment, "GP");
-        viewPager.setAdapter(swipeAdapter);
-    }*/
-
-
-
 
     private void checkYouTubeApi() {
         YouTubeInitializationResult errorReason =
@@ -277,88 +170,23 @@ public final class HomeActivity extends AppCompatActivity implements
         layout();
     }
 
-    /**
-     * Sets up the layout programatically for the three different states. Portrait, landscape or
-     * fullscreen+landscape. This has to be done programmatically because we handle the orientation
-     * changes ourselves in order to get fluent fullscreen transitions, so the xml layout resources
-     * do not get reloaded.
-     */
     private void layout() {
         boolean isPortrait =
                 getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
-
 
         //closeButton.setVisibility(isPortrait ? View.VISIBLE : View.GONE);
 
         if (isFullscreen) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            listFragment.getView().setVisibility(View.GONE);
-            listFragment.setLabelVisibility(false);
-
             videoBox.setTranslationY(0); // Reset any translation that was applied in portrait.
             setLayoutSize(videoFragment.getView(), WRAP_CONTENT, WRAP_CONTENT);
             setLayoutSizeAndGravity(videoBox, MATCH_PARENT, WRAP_CONTENT, Gravity.TOP | Gravity.LEFT);
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            listFragment.getView().setVisibility(View.GONE);
-            listFragment.setLabelVisibility(true);
-           /* MoviewListFragment criminalBusinessFragment = new MoviewListFragment(this);
-            getSupportFragmentManager().beginTransaction().add(R.id.layout_list, criminalBusinessFragment).commit();
-          */
-           setLayoutSize(listFragment.getView(), MATCH_PARENT, MATCH_PARENT);
             setLayoutSize(videoFragment.getView(), MATCH_PARENT, WRAP_CONTENT);
             setLayoutSizeAndGravity(videoBox, MATCH_PARENT, WRAP_CONTENT, Gravity.BOTTOM);
-        } /*else {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            videoBox.setTranslationY(0); // Reset any translation that was applied in portrait.
-            int screenWidth = dpToPx(getResources().getConfiguration().screenWidthDp);
-            setLayoutSize(listFragment.getView(), screenWidth / 4, MATCH_PARENT);
-            int videoWidth = screenWidth - screenWidth / 4 - dpToPx(LANDSCAPE_VIDEO_PADDING_DP);
-            setLayoutSize(videoFragment.getView(), videoWidth, WRAP_CONTENT);
-            setLayoutSizeAndGravity(videoBox, videoWidth, WRAP_CONTENT,
-                    Gravity.RIGHT | Gravity.CENTER_VERTICAL);
-            *//*videoBox.setTranslationY(0); // Reset any translation that was applied in portrait.
-            setLayoutSize(videoFragment.getView(), MATCH_PARENT, WRAP_CONTENT);
-            setLayoutSizeAndGravity(videoBox, MATCH_PARENT, MATCH_PARENT, Gravity.TOP | Gravity.LEFT);
-*//*
-        }*/
-    }
-
-
-    public void onClickClose(@SuppressWarnings("unused") View view) {
-        listFragment.getListView().clearChoices();
-        listFragment.getListView().requestLayout();
-        videoFragment.pause();
-        ViewPropertyAnimator animator = videoBox.animate()
-                .translationYBy(videoBox.getHeight())
-                .setDuration(ANIMATION_DURATION_MILLIS);
-        runOnAnimationEnd(animator, new Runnable() {
-            @Override
-            public void run() {
-                videoBox.setVisibility(View.INVISIBLE);
-            }
-        });
-    }
-
-    @TargetApi(16)
-    private void runOnAnimationEnd(ViewPropertyAnimator animator, final Runnable runnable) {
-        if (Build.VERSION.SDK_INT >= 16) {
-            animator.withEndAction(runnable);
-        } else {
-            animator.setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    runnable.run();
-                }
-            });
         }
     }
-
-    /**
-     * A fragment that shows a static list of videos.
-     *
-     *
-     */
 
     private void setupViewPager(ViewPager viewPager) {
 
@@ -406,8 +234,7 @@ public final class HomeActivity extends AppCompatActivity implements
     @Override
     public void onPaused() {
         Log.d("Player", "Paused");
-        if(mInterstitialAd.isLoaded())
-        {
+        if (mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
             mInterstitialAd.loadAd(new AdRequest.Builder().build());
         }
@@ -420,7 +247,7 @@ public final class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onBuffering(boolean b) {
-        Log.d("Player", "buffering"+b);
+        Log.d("Player", "buffering" + b);
     }
 
     @Override
@@ -428,215 +255,15 @@ public final class HomeActivity extends AppCompatActivity implements
 
     }
 
-    public static final class VideoListFragment extends ListFragment {
-
-        private static final List<VideoEntry> VIDEO_LIST;
-
-        static {
-            List<VideoEntry> list = new ArrayList<VideoEntry>();
-            list.add(new VideoEntry("Bangla Song \"Dipannita\"", "Bph709EqnHk"));
-            list.add(new VideoEntry("Kolkata | Full Video Song | PRAKTAN | Anupam Roy | Shreya Ghoshal | Prosenjit & Rituparna", "YmIhZCNXfJE"));
-            list.add(new VideoEntry("কেউ কথা রাখে নি (Keu kotha rakhe ni) | সুনীল গঙ্গোপাধ্যায় | Medha Bandopadhyay recitation", "nhrOuQYU8XI"));
-            list.add(new VideoEntry("Deyale Deyale | Minar | Tomar Amar Prem | Siam | Ognila | Mizanur Rahman Aryan |Bangla New Song 2017", "XChdfPIvoIo"));
-            list.add(new VideoEntry("কেউ কথা রাখে নি (Keu kotha rakhe ni) | সুনীল গঙ্গোপাধ্যায় | কেউ কথা রাখে নি (Keu kotha rakhe ni) | সুনীল গঙ্গোপাধ্যায় |  Autocompleter Autocompleter Autocompleter Autocompleter Autocompleter" +
-                    "Autocompleter Autocompleter Autocompleter Autocompleter Autocompleter Autocompleter", "blB_X38YSxQ"));
-            list.add(new VideoEntry("GMail Motion", "Bu927_ul_X0"));
-            list.add(new VideoEntry("Translate for Animals", "3I24bSteJpw"));
-            list.add(new VideoEntry("aaaaaaaaaaaa", "Bu927_ul_X0"));
-            list.add(new VideoEntry("bbbbbbbbbbb", "3I24bSteJpw"));
-            list.add(new VideoEntry("ccccccccccc", "Bu927_ul_X0"));
-            list.add(new VideoEntry("dddddddddddddddd", "3I24bSteJpw"));
-            VIDEO_LIST = Collections.unmodifiableList(list);
-        }
-
-        private PageAdapter adapter;
-        private View videoBox;
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            adapter = new PageAdapter(getActivity(), VIDEO_LIST);
-        }
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            //getListView().setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-
-            ListView v = getListView();
-            videoBox = getActivity().findViewById(R.id.video_box);
-            v.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-            VideoFragment videoFragment =
-                    (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
-            videoFragment.setVideoId(VIDEO_LIST.get(0).videoId);
-            setListAdapter(adapter);
-        }
-
-        @Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
-            String videoId = VIDEO_LIST.get(position).videoId;
-            VideoFragment videoFragment =
-                    (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
-            videoFragment.setVideoId(videoId);
-
-
-            // The videoBox is INVISIBLE if no video was previously selected, so we need to show it now.
-            if (videoBox.getVisibility() != View.VISIBLE) {
-                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    // Initially translate off the screen so that it can be animated in from below.
-                    videoBox.setTranslationY(videoBox.getHeight());
-                }
-                videoBox.setVisibility(View.VISIBLE);
-            }
-
-            // If the fragment is off the screen, we animate it in.
-            if (videoBox.getTranslationY() > 0) {
-                videoBox.animate().translationY(0).setDuration(ANIMATION_DURATION_MILLIS);
-            }
-        }
-
-        @Override
-        public void onDestroyView() {
-            super.onDestroyView();
-
-            adapter.releaseLoaders();
-        }
-
-        public void setLabelVisibility(boolean visible) {
-            adapter.setLabelVisibility(visible);
-        }
-
-    }
-
-
-    /**
-     * Adapter for the video list. Manages a set of YouTubeThumbnailViews, including initializing each
-     * of them only once and keeping track of the loader of each one. When the ListFragment gets
-     * destroyed it releases all the loaders.
-     */
-    private static final class PageAdapter extends BaseAdapter {
-
-        private final List<VideoEntry> entries;
-        private final List<View> entryViews;
-        private final Map<YouTubeThumbnailView, YouTubeThumbnailLoader> thumbnailViewToLoaderMap;
-        private final LayoutInflater inflater;
-        private final ThumbnailListener thumbnailListener;
-
-        private boolean labelsVisible;
-
-        public PageAdapter(Context context, List<VideoEntry> entries) {
-            this.entries = entries;
-
-            entryViews = new ArrayList<View>();
-            thumbnailViewToLoaderMap = new HashMap<YouTubeThumbnailView, YouTubeThumbnailLoader>();
-            inflater = LayoutInflater.from(context);
-            thumbnailListener = new ThumbnailListener();
-
-            labelsVisible = true;
-        }
-
-        public void releaseLoaders() {
-            for (YouTubeThumbnailLoader loader : thumbnailViewToLoaderMap.values()) {
-                loader.release();
-            }
-        }
-
-        public void setLabelVisibility(boolean visible) {
-            labelsVisible = visible;
-            for (View view : entryViews) {
-                view.findViewById(R.id.video_name).setVisibility(visible ? View.VISIBLE : View.GONE);
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return entries.size();
-        }
-
-        @Override
-        public VideoEntry getItem(int position) {
-            return entries.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            VideoEntry entry = entries.get(position);
-
-            // There are three cases here
-            if (view == null) {
-                // 1) The view has not yet been created - we need to initialize the YouTubeThumbnailView.
-                Log.d("Checking","null view");
-                view = inflater.inflate(R.layout.video_list_item, parent, false);
-                YouTubeThumbnailView thumbnail = (YouTubeThumbnailView) view.findViewById(R.id.thumbnail);
-                thumbnail.setTag(entry.videoId);
-                thumbnail.initialize(DeveloperKey.DEVELOPER_KEY, thumbnailListener);
-            } else {
-                YouTubeThumbnailView thumbnail = (YouTubeThumbnailView) view.findViewById(R.id.thumbnail);
-                YouTubeThumbnailLoader loader = thumbnailViewToLoaderMap.get(thumbnail);
-                if (loader == null) {
-                    // 2) The view is already created, and is currently being initialized. We store the
-                    //    current videoId in the tag.
-                    thumbnail.setTag(entry.videoId);
-                } else {
-                    // 3) The view is already created and already initialized. Simply set the right videoId
-                    //    on the loader.
-                    thumbnail.setImageResource(R.drawable.loading_thumbnail);
-                    loader.setVideo(entry.videoId);
-                }
-            }
-            TextView label = view.findViewById(R.id.video_name);
-            label.setText(entry.text);
-            label.setVisibility(labelsVisible ? View.VISIBLE : View.GONE);
-            return view;
-        }
-
-        private final class ThumbnailListener implements
-                YouTubeThumbnailView.OnInitializedListener,
-                YouTubeThumbnailLoader.OnThumbnailLoadedListener {
-
-            @Override
-            public void onInitializationSuccess(
-                    YouTubeThumbnailView view, YouTubeThumbnailLoader loader) {
-                loader.setOnThumbnailLoadedListener(this);
-                thumbnailViewToLoaderMap.put(view, loader);
-                view.setImageResource(R.drawable.loading_thumbnail);
-                String videoId = (String) view.getTag();
-                loader.setVideo(videoId);
-            }
-
-            @Override
-            public void onInitializationFailure(
-                    YouTubeThumbnailView view, YouTubeInitializationResult loader) {
-                view.setImageResource(R.drawable.no_thumbnail);
-            }
-
-            @Override
-            public void onThumbnailLoaded(YouTubeThumbnailView view, String videoId) {
-
-
-            }
-
-            @Override
-            public void onThumbnailError(YouTubeThumbnailView view, ErrorReason errorReason) {
-                view.setImageResource(R.drawable.no_thumbnail);
-            }
-        }
-    }
-
-    // RecyleView
 
     @SuppressLint("ValidFragment")
-    public static final class MovieFragment extends Fragment{
+    public static final class MovieFragment extends Fragment {
 
         private RecyclerView mRecyclerView;
-        private VideoAdapter mAdapter;
+        private MovieAdapter mAdapter;
         private Context mContext;
+        private VideoVideoModel model;
+
 
         public MovieFragment(Context mContext) {
             this.mContext = mContext;
@@ -648,16 +275,25 @@ public final class HomeActivity extends AppCompatActivity implements
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-            View view = inflater.inflate(R.layout.fragment_moview_list,container,false);
+            View view = inflater.inflate(R.layout.fragment_moview_list, container, false);
             mRecyclerView = view.findViewById(R.id.layout_movie_list);
+            model = ViewModelProviders.of(this).get(VideoVideoModel.class);
 
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
             mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext));
 
-            mAdapter = new VideoAdapter(mContext);
+            mAdapter = new MovieAdapter(mContext);
+
+
+            model.getMovie().observe(this, new Observer<List<VideoEntity>>() {
+                @Override
+                public void onChanged(@Nullable List<VideoEntity> videoEntities) {
+                    mAdapter.setVideo(videoEntities);
+                }
+            });
             mRecyclerView.setAdapter(mAdapter);
 
             return view;
@@ -666,7 +302,7 @@ public final class HomeActivity extends AppCompatActivity implements
     }
 
     @SuppressLint("ValidFragment")
-    public static final class DocumentaryFragment extends Fragment{
+    public static final class DocumentaryFragment extends Fragment {
 
         private RecyclerView mRecyclerView;
         private DocumentaryAdapter mAdapter;
@@ -682,9 +318,9 @@ public final class HomeActivity extends AppCompatActivity implements
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-            View view = inflater.inflate(R.layout.fragment_documentary_list,container,false);
+            View view = inflater.inflate(R.layout.fragment_documentary_list, container, false);
             mRecyclerView = view.findViewById(R.id.layout_documentary_list);
 
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
@@ -734,8 +370,7 @@ public final class HomeActivity extends AppCompatActivity implements
         static DocumentaryAdapter.ThumbnailListener thumbnailListener;
         Context context;
         boolean labelsVisible;
-        int pos=-1;
-
+        int pos = -1;
 
 
         public DocumentaryAdapter(Context context) {
@@ -754,14 +389,13 @@ public final class HomeActivity extends AppCompatActivity implements
 
         @Override
         public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(context).inflate(R.layout.video_list_item,parent,false);
+            View view = LayoutInflater.from(context).inflate(R.layout.video_list_item, parent, false);
             return new Holder(view);
         }
 
         @Override
         public void onBindViewHolder(final Holder holder, final int position) {
-            if(holder!=null)
-            {
+            if (holder != null) {
                 final VideoEntry entry = GlobalVideoList.VIDEO_LIST.get(position);
                 //holder.thumbnail.setTag(entry.videoId);
 
@@ -778,16 +412,14 @@ public final class HomeActivity extends AppCompatActivity implements
                     // 3) The view is already created and already initialized. Simply set the right videoId
                     //    on the loader.
                     holder.thumbnail.setImageResource(R.drawable.loading_thumbnail);
-                     loader.setVideo(entry.videoId);
+                    loader.setVideo(entry.videoId);
                 }
 
                 holder.label.setText(entry.text);
 
-                if(pos==position)
-                {
+                if (pos == position) {
                     holder.itemLayout.setBackgroundResource(R.color.colorAccent);
-                }
-                else {
+                } else {
                     //holder.itemLayout.setBackgroundResource(R.drawable.t);
                     /*TypedArray a = mContext.obtainStyledAttributes(new int[] { android.R.attr.activatedBackgroundIndicator });
                     int resource = a.getResourceId(0, 0);
@@ -813,6 +445,7 @@ public final class HomeActivity extends AppCompatActivity implements
 
         @Override
         public int getItemCount() {
+            //return 0;
             return GlobalVideoList.VIDEO_LIST.size();
         }
 
@@ -830,16 +463,16 @@ public final class HomeActivity extends AppCompatActivity implements
                 itemLayout = itemView.findViewById(R.id.item_layout);
                 itemView.setOnClickListener(this);
             }
+
             @Override
             public void onClick(View v) {
                 itemClickListener.onItemClick();
             }
 
-            interface ItemClickListener{
+            interface ItemClickListener {
                 void onItemClick();
             }
         }
-
 
 
         private final class ThumbnailListener implements
@@ -875,23 +508,27 @@ public final class HomeActivity extends AppCompatActivity implements
     }
 
 
-    public static final class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Holder> {
+    public static final class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.Holder> {
 
 
         Map<YouTubeThumbnailView, YouTubeThumbnailLoader> thumbnailViewToLoaderMap;
-        static VideoAdapter.ThumbnailListener thumbnailListener;
+        static MovieAdapter.ThumbnailListener thumbnailListener;
         Context context;
         boolean labelsVisible;
-        int pos =-1;
+        int pos = -1;
+        private List<VideoEntity> mMovie;
 
-
-
-        public VideoAdapter(Context context) {
+        public MovieAdapter(Context context) {
 
             this.context = context;
             thumbnailViewToLoaderMap = new HashMap<YouTubeThumbnailView, YouTubeThumbnailLoader>();
-            thumbnailListener = new VideoAdapter.ThumbnailListener();
+            thumbnailListener = new MovieAdapter.ThumbnailListener();
             labelsVisible = true;
+        }
+
+        void setVideo(List<VideoEntity> entity) {
+            mMovie = entity;
+            notifyDataSetChanged();
         }
 
         public void releaseLoaders() {
@@ -902,62 +539,54 @@ public final class HomeActivity extends AppCompatActivity implements
 
         @Override
         public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(context).inflate(R.layout.video_list_item,parent,false);
+            View view = LayoutInflater.from(context).inflate(R.layout.video_list_item, parent, false);
             return new Holder(view);
         }
 
         @Override
         public void onBindViewHolder(final Holder holder, final int position) {
-            if(holder!=null)
-            {
-                final VideoEntry entry = GlobalVideoList.VIDEO_LIST.get(position);
-                //holder.thumbnail.setTag(entry.videoId);
 
-                /*YouTubeThumbnailLoader loader = entry.getTubeThumbnailLoader();
-                entry.setTubeThumbnailLoader(loader);*/
+            if (holder != null) {
+                final VideoEntity entity = mMovie.get(position);
+
 
                 YouTubeThumbnailLoader loader = thumbnailViewToLoaderMap.get(holder.thumbnail);
                 if (loader == null) {
-                    // 2) The view is already created, and is currently being initialized. We store the
-                    //    current videoId in the tag.
-                    holder.thumbnail.setTag(entry.videoId);
-                    //entry.setTubeThumbnailLoader(loader);
+                    holder.thumbnail.setTag(entity.id);
                 } else {
-                    // 3) The view is already created and already initialized. Simply set the right videoId
-                    //    on the loader.
                     holder.thumbnail.setImageResource(R.drawable.loading_thumbnail);
-                    loader.setVideo(entry.videoId);
+                    loader.setVideo(entity.id);
                 }
 
-                holder.label.setText(entry.text);
+                holder.label.setText(entity.name);
 
-                if(pos==position)
-                {
+                if (pos == position) {
                     holder.itemLayout.setBackgroundResource(R.color.colorAccent);
-                }
-                else {
+                } else {
                     holder.itemLayout.setBackgroundColor(android.R.attr.activatedBackgroundIndicator);
 
                     //holder.itemLayout.setBackgroundResource(R.color.colorWhite);
                 }
 
-                holder.itemClickListener = new VideoAdapter.Holder.ItemClickListener() {
+                holder.itemClickListener = new MovieAdapter.Holder.ItemClickListener() {
                     @Override
                     public void onItemClick() {
-                        mVideoFragment.setVideoId(entry.videoId);
+                        mVideoFragment.setVideoId(entity.id);
                         notifyItemChanged(pos);
                         pos = position;
                         holder.itemLayout.setBackgroundResource(R.color.colorAccent);
                     }
                 };
 
-
             }
         }
 
         @Override
         public int getItemCount() {
-            return GlobalVideoList.VIDEO_LIST.size();
+            if (mMovie != null) {
+                return mMovie.size();
+            }
+            return 0;
         }
 
         public static class Holder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -974,16 +603,16 @@ public final class HomeActivity extends AppCompatActivity implements
                 itemLayout = itemView.findViewById(R.id.item_layout);
                 itemView.setOnClickListener(this);
             }
+
             @Override
             public void onClick(View v) {
                 itemClickListener.onItemClick();
             }
 
-            interface ItemClickListener{
+            interface ItemClickListener {
                 void onItemClick();
             }
         }
-
 
 
         private final class ThumbnailListener implements
@@ -1059,7 +688,7 @@ public final class HomeActivity extends AppCompatActivity implements
                 player.pause();
             }
         }
-        
+
 
         @Override
         public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean restored) {
@@ -1077,7 +706,6 @@ public final class HomeActivity extends AppCompatActivity implements
         public void onInitializationFailure(Provider provider, YouTubeInitializationResult result) {
             this.player = null;
         }
-
 
 
     }
@@ -1298,8 +926,8 @@ public final class HomeActivity extends AppCompatActivity implements
 
         public VideoEntry(String text, String videoId) {
             this.text = text;
-            videoId = videoId.replace("https://www.youtube.com/watch?v=","");
-            Log.d("Check",videoId);
+            videoId = videoId.replace("https://www.youtube.com/watch?v=", "");
+            Log.d("Check", videoId);
             this.videoId = videoId;
         }
     }

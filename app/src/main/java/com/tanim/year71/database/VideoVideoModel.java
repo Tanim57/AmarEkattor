@@ -3,6 +3,7 @@ package com.tanim.year71.database;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
+import com.tanim.year71.App;
 import com.tanim.year71.VideoInfo;
 
 import java.util.List;
@@ -13,19 +14,33 @@ import java.util.List;
 
 public class VideoVideoModel extends ViewModel {
     public LiveData<List<VideoInfo>> mLiveData;
-    VideoRepository videoRepository;
-    public VideoVideoModel(VideoRepository videoRepository)
+    private VideoRepository videoRepository;
+    public VideoVideoModel()
     {
-        this.videoRepository = videoRepository;
+        super();
+        videoRepository = new VideoRepository();
     }
-    private LiveData<List<VideoInfo>> getMovie(String movie)
+    public void insert(VideoEntity entity)
     {
-        return videoRepository.getMovie(movie);
+        videoRepository.insert(entity);
     }
 
-    private LiveData<List<VideoInfo>> getDocumentary(String documentary)
+    public VideoEntity getData(String id)
     {
-        return videoRepository.getMovie(documentary);
+        return videoRepository.getData(id);
+    }
+
+    public LiveData<List<VideoEntity>> getMovie()
+    {
+        return videoRepository.getMovies();
+    }
+    public LiveData<List<VideoEntity>> getDocumentary()
+    {
+        return videoRepository.getDocumentary();
+    }
+    public void deleteAll()
+    {
+        videoRepository.deleteALL();
     }
 
 }
