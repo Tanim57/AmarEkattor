@@ -1,10 +1,9 @@
-package com.tanim.year71.database;
+package com.tanim.amarekattor.database;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
-import com.tanim.year71.App;
-import com.tanim.year71.VideoInfo;
+import com.tanim.amarekattor.VideoInfo;
 
 import java.util.List;
 

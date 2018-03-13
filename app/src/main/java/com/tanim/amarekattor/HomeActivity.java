@@ -1,4 +1,4 @@
-package com.tanim.year71;
+package com.tanim.amarekattor;
 
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
@@ -31,6 +31,8 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -41,14 +43,14 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailLoader.ErrorReason;
 import com.google.android.youtube.player.YouTubeThumbnailView;
-import com.tanim.year71.database.InsertMovie;
-import com.tanim.year71.database.VideoEntity;
-import com.tanim.year71.database.VideoVideoModel;
+import com.tanim.amarekattor.database.VideoEntity;
+import com.tanim.amarekattor.database.VideoVideoModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -61,12 +63,19 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * rebuffering.
  */
 public final class HomeActivity extends AppCompatActivity implements
-        OnFullscreenListener, YouTubePlayer.PlayerStateChangeListener, YouTubePlayer.PlaybackEventListener {
+        OnFullscreenListener, YouTubePlayer.PlayerStateChangeListener,
+        YouTubePlayer.PlaybackEventListener {
 
     /**
      * The duration of the animation sliding up the video in portrait.
      */
+
+    private int max = 19;
+    private int min = 2;
+    private int inAd=7,rewordAd =12;
     private static final int ANIMATION_DURATION_MILLIS = 300;
+    Random mRandom;
+    static int First = 0;
     /**
      * The padding between the video list and the video in landscape orientation.
      */
@@ -80,8 +89,6 @@ public final class HomeActivity extends AppCompatActivity implements
     private VideoFragment videoFragment;
 
     private View videoBox;
-    private View closeButton;
-
     private boolean isFullscreen;
     private AdView mAdView;
     private ViewPager viewPager;
@@ -91,6 +98,7 @@ public final class HomeActivity extends AppCompatActivity implements
     private DocumentaryFragment mDocumentaryFragment;
     private static VideoFragment mVideoFragment;
     private InterstitialAd mInterstitialAd;
+    private RewardedVideoAd mRewardedVideoAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +115,7 @@ public final class HomeActivity extends AppCompatActivity implements
         videoBox = findViewById(R.id.video_box);
         mContext = getApplicationContext();
 
-        new InsertMovie().execute();
+        //new InsertMovie().execute();
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -130,9 +138,28 @@ public final class HomeActivity extends AppCompatActivity implements
         //setupViewPager(viewPager);
 
         checkYouTubeApi();
+
+
+
+        loadInterstitialAd();
+        loadRewordViedo();
+        mRandom = new Random();
+    }
+
+    void loadInterstitialAd()
+    {
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        //"ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.setAdUnitId(getString(R.string.interstial));
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+
+    void loadRewordViedo()
+    {
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        //"ca-app-pub-3940256099942544/5224354917"
+        mRewardedVideoAd.loadAd(getString(R.string.reword),
+                new AdRequest.Builder().build());
     }
 
     private void checkYouTubeApi() {
@@ -197,57 +224,72 @@ public final class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onLoading() {
-        Log.d("Player", "Loading");
 
     }
 
     @Override
     public void onLoaded(String s) {
-        Log.d("Player", "Loaded");
+
     }
 
     @Override
     public void onAdStarted() {
-        Log.d("Player", "Adloaded");
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+            loadInterstitialAd();
+        }
     }
 
     @Override
     public void onVideoStarted() {
-        Log.d("Player", "Stated");
+
     }
 
     @Override
     public void onVideoEnded() {
-        Log.d("Player", "End");
+        if(mInterstitialAd.isLoaded())
+        {
+            mInterstitialAd.show();
+            loadInterstitialAd();
+        }
     }
 
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
-        Log.d("Player", "Error");
+
     }
 
     @Override
     public void onPlaying() {
-        Log.d("Player", "Playing");
+
     }
 
     @Override
     public void onPaused() {
-        Log.d("Player", "Paused");
-        if (mInterstitialAd.isLoaded()) {
+
+        int r = mRandom.nextInt(max-min+1)+min;
+
+        if(mRewardedVideoAd.isLoaded() && r == rewordAd)
+        {
+            mRewardedVideoAd.show();
+            loadRewordViedo();
+        }
+
+        if (mInterstitialAd.isLoaded() && r == inAd) {
+
             mInterstitialAd.show();
-            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            loadInterstitialAd();
         }
     }
 
     @Override
     public void onStopped() {
-        Log.d("Player", "Stop");
+
     }
 
     @Override
     public void onBuffering(boolean b) {
-        Log.d("Player", "buffering" + b);
+
     }
 
     @Override
@@ -547,8 +589,13 @@ public final class HomeActivity extends AppCompatActivity implements
         public void onBindViewHolder(final Holder holder, final int position) {
 
             if (holder != null) {
-                final VideoEntity entity = mMovie.get(position);
 
+                final VideoEntity entity = mMovie.get(position);
+                if(First == 0)
+                {
+                    mVideoFragment.setVideoId(entity.id);
+                    First++;
+                }
 
                 YouTubeThumbnailLoader loader = thumbnailViewToLoaderMap.get(holder.thumbnail);
                 if (loader == null) {

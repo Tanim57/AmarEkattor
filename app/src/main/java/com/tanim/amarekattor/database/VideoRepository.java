@@ -1,11 +1,9 @@
-package com.tanim.year71.database;
+package com.tanim.amarekattor.database;
 
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
 
-import com.tanim.year71.Constant;
-import com.tanim.year71.VideoInfo;
+import com.tanim.amarekattor.Constant;
 
 import java.util.List;
 

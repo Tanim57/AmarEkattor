@@ -1,24 +1,10 @@
-package com.tanim.year71;
+package com.tanim.amarekattor;
 
-import android.content.Context;
-import android.util.Log;
+import com.tanim.amarekattor.database.VideoEntity;
 
-import com.tanim.year71.database.VideoEntity;
-import com.tanim.year71.database.VideoRepository;
-import com.tanim.year71.database.VideoVideoModel;
-
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by tanim on 2/27/18.

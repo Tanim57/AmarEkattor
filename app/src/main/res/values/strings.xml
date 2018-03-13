@@ -1,7 +1,15 @@
 <resources>
-    <string name="app_name">Year 71</string>
+    <string name="app_name">আমার একাত্তর</string>
     <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_activity_launching">LaunchingActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="banner">ca-app-pub-8362278577797924/1153706678</string>
+    <string name="interstial">ca-app-pub-8362278577797924/9427002261</string>
+    <string name="reword">ca-app-pub-8362278577797924/6226123851</string>
 </resources>

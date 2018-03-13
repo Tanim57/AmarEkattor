@@ -1,9 +1,9 @@
-package com.tanim.year71.database;
+package com.tanim.amarekattor.database;
 
 import android.os.AsyncTask;
 
-import com.tanim.year71.App;
-import com.tanim.year71.Constant;
+import com.tanim.amarekattor.App;
+import com.tanim.amarekattor.Constant;
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -13,7 +13,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.UUID;
 
 /**
  * Created by tanim on 3/11/2018.
@@ -46,7 +45,7 @@ public class InsertMovie extends AsyncTask {
                             link = cell.getStringCellValue();
                             VideoEntity entity = new VideoEntity();
                             link = link.replace("https://www.youtube.com/watch?v=", "");
-                            UUID uuid = UUID.randomUUID();
+                            //UUID uuid = UUID.randomUUID();
                             entity.id = link;
                             entity.name = name;
                             entity.type = Constant.MOVIE;

@@ -1,4 +1,4 @@
-package com.tanim.year71;
+package com.tanim.amarekattor;
 
 /**
  * Created by tanim on 3/10/2018.

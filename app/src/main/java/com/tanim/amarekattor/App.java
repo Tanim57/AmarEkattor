@@ -1,4 +1,4 @@
-package com.tanim.year71;
+package com.tanim.amarekattor;
 
 import android.app.Application;
 import android.content.Context;

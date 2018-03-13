@@ -1,4 +1,4 @@
-package com.tanim.year71.database;
+package com.tanim.amarekattor.database;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;

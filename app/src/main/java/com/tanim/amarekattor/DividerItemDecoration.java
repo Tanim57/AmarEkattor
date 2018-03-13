@@ -1,4 +1,4 @@
-package com.tanim.year71;
+package com.tanim.amarekattor;
 
 import android.content.Context;
 import android.graphics.Canvas;

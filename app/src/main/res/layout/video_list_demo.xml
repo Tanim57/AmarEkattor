@@ -28,7 +28,7 @@
         android:gravity="center"
         android:background="@color/colorPrimaryDark">
         <fragment
-            class="com.tanim.year71.HomeActivity$VideoFragment"
+            class="com.tanim.amarekattor.HomeActivity$VideoFragment"
             android:id="@+id/video_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
@@ -62,9 +62,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
+            ads:adUnitId="@string/banner">
         </com.google.android.gms.ads.AdView>
     </LinearLayout>
+
+    <!--"ca-app-pub-3940256099942544/6300978111"-->
 
 
 </RelativeLayout>
