@@ -20,8 +20,8 @@ public interface VideoDao {
     @Query("Select * from video_entity Where id=:id")
     public VideoEntity isExist(String id);
 
-    @Query("Select * from video_entity")
-    public LiveData<List<VideoEntity>> getMovie();
+    @Query("Select * from video_entity Where type= :movie")
+    public LiveData<List<VideoEntity>> getMovie(String movie);
 
     @Query("Select * from video_entity Where type= :documentary")
     public LiveData<List<VideoEntity>> getDocumentary(String documentary);

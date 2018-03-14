@@ -12,24 +12,24 @@ import java.util.List;
  */
 
 public class VideoRepository{
-    VideoDao videoDao;
-    AppDatabase appDatabase;
-    LiveData<List<VideoEntity>> mMovies;
-    LiveData<List<VideoEntity>> mDocumentary;
+    private VideoDao videoDao;
+    private AppDatabase appDatabase;
+    private LiveData<List<VideoEntity>> mMovies;
+    private LiveData<List<VideoEntity>> mDocumentary;
 
     public VideoRepository()
     {
         appDatabase = AppDatabase.getDatabase();
         videoDao = appDatabase.videoDao();
-        mMovies = videoDao.getMovie();
-        mDocumentary = videoDao.getDocumentary(Constant.DOCUMENTARY);
+        mDocumentary = videoDao.getDocumentary("2");
+        mMovies = videoDao.getMovie("1");
     }
-    public void insert(VideoEntity entity)
+    void insert(VideoEntity entity)
     {
         new insertVideo(videoDao).execute(entity);
     }
 
-    public VideoEntity getData(String id)
+    VideoEntity getData(String id)
     {
         return videoDao.isExist(id);
     }

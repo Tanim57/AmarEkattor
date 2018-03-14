@@ -2,18 +2,6 @@ package com.tanim.amarekattor.database;
 
 import android.os.AsyncTask;
 
-import com.tanim.amarekattor.App;
-import com.tanim.amarekattor.Constant;
-
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
-
 /**
  * Created by tanim on 3/11/2018.
  */
@@ -21,7 +9,7 @@ import java.util.Iterator;
 public class InsertMovie extends AsyncTask {
     @Override
     protected Object doInBackground(Object[] objects) {
-        VideoVideoModel model = new VideoVideoModel();
+        /*VideoVideoModel model = new VideoVideoModel();
         try {
             InputStream inputStream = null;
             inputStream = App.getContext().getAssets().open("documentary.xlsx");
@@ -79,7 +67,7 @@ public class InsertMovie extends AsyncTask {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         return null;
     }
 }

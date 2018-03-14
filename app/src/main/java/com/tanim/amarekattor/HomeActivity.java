@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +43,7 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailLoader.ErrorReason;
 import com.google.android.youtube.player.YouTubeThumbnailView;
+import com.tanim.amarekattor.database.ReadFromJson;
 import com.tanim.amarekattor.database.VideoEntity;
 import com.tanim.amarekattor.database.VideoVideoModel;
 
@@ -92,7 +93,7 @@ public final class HomeActivity extends AppCompatActivity implements
     private boolean isFullscreen;
     private AdView mAdView;
     private ViewPager viewPager;
-    private static Context mContext;
+    private Context mContext;
     private ViewPagerAdapter mAdapter;
     private MovieFragment mMoviewFragment;
     private DocumentaryFragment mDocumentaryFragment;
@@ -105,9 +106,11 @@ public final class HomeActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        /*getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);*/
         //getSupportActionBar().hide();
 
-        setContentView(R.layout.video_list_demo);
+        setContentView(R.layout.main_activity);
 
         videoFragment =
                 (VideoFragment) getFragmentManager().findFragmentById(R.id.video_fragment_container);
@@ -116,11 +119,14 @@ public final class HomeActivity extends AppCompatActivity implements
         mContext = getApplicationContext();
 
         //new InsertMovie().execute();
+        new ReadFromJson(this).execute();
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
         mMoviewFragment = new MovieFragment(mContext);
+        Bundle args = new Bundle();
+
         mDocumentaryFragment = new DocumentaryFragment(mContext);
 
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -192,8 +198,6 @@ public final class HomeActivity extends AppCompatActivity implements
     @Override
     public void onFullscreen(boolean isFullscreen) {
         this.isFullscreen = isFullscreen;
-
-
         layout();
     }
 
@@ -216,7 +220,6 @@ public final class HomeActivity extends AppCompatActivity implements
     }
 
     private void setupViewPager(ViewPager viewPager) {
-
         mAdapter.addFragment(mMoviewFragment, "Movie");
         mAdapter.addFragment(mDocumentaryFragment, "Documentary");
         viewPager.setAdapter(mAdapter);
@@ -300,9 +303,9 @@ public final class HomeActivity extends AppCompatActivity implements
 
     @SuppressLint("ValidFragment")
     public static final class MovieFragment extends Fragment {
-
+        public final static String MOVIE_TAG = "MOVIE_TAG";
         private RecyclerView mRecyclerView;
-        private MovieAdapter mAdapter;
+        private MovieAdapter movieAdapter;
         private Context mContext;
         private VideoVideoModel model;
 
@@ -327,16 +330,16 @@ public final class HomeActivity extends AppCompatActivity implements
             mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext));
 
-            mAdapter = new MovieAdapter(mContext);
+            movieAdapter = new MovieAdapter(mContext);
 
 
             model.getMovie().observe(this, new Observer<List<VideoEntity>>() {
                 @Override
                 public void onChanged(@Nullable List<VideoEntity> videoEntities) {
-                    mAdapter.setVideo(videoEntities);
+                    movieAdapter.setVideo(videoEntities);
                 }
             });
-            mRecyclerView.setAdapter(mAdapter);
+            mRecyclerView.setAdapter(movieAdapter);
 
             return view;
         }
@@ -347,8 +350,9 @@ public final class HomeActivity extends AppCompatActivity implements
     public static final class DocumentaryFragment extends Fragment {
 
         private RecyclerView mRecyclerView;
-        private DocumentaryAdapter mAdapter;
+        private DocumentaryAdapter documentaryAdapter;
         private Context mContext;
+        private VideoVideoModel model;
 
         public DocumentaryFragment(Context mContext) {
             this.mContext = mContext;
@@ -364,14 +368,22 @@ public final class HomeActivity extends AppCompatActivity implements
 
             View view = inflater.inflate(R.layout.fragment_documentary_list, container, false);
             mRecyclerView = view.findViewById(R.id.layout_documentary_list);
+            model = ViewModelProviders.of(this).get(VideoVideoModel.class);
 
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
             mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext));
 
-            mAdapter = new DocumentaryAdapter(mContext);
-            mRecyclerView.setAdapter(mAdapter);
+            documentaryAdapter = new DocumentaryAdapter(mContext);
 
+
+            model.getDocumentary().observe(this, new Observer<List<VideoEntity>>() {
+                @Override
+                public void onChanged(@Nullable List<VideoEntity> videoEntities) {
+                    documentaryAdapter.setVideo(videoEntities);
+                }
+            });
+            mRecyclerView.setAdapter(documentaryAdapter);
             return view;
         }
     }
@@ -413,6 +425,7 @@ public final class HomeActivity extends AppCompatActivity implements
         Context context;
         boolean labelsVisible;
         int pos = -1;
+        private List<VideoEntity> mDocumentary;
 
 
         public DocumentaryAdapter(Context context) {
@@ -421,6 +434,11 @@ public final class HomeActivity extends AppCompatActivity implements
             thumbnailViewToLoaderMap = new HashMap<YouTubeThumbnailView, YouTubeThumbnailLoader>();
             thumbnailListener = new DocumentaryAdapter.ThumbnailListener();
             labelsVisible = true;
+        }
+
+        void setVideo(List<VideoEntity> videoEntities) {
+            mDocumentary = videoEntities;
+            notifyDataSetChanged();
         }
 
         public void releaseLoaders() {
@@ -438,26 +456,24 @@ public final class HomeActivity extends AppCompatActivity implements
         @Override
         public void onBindViewHolder(final Holder holder, final int position) {
             if (holder != null) {
-                final VideoEntry entry = GlobalVideoList.VIDEO_LIST.get(position);
-                //holder.thumbnail.setTag(entry.videoId);
 
-                /*YouTubeThumbnailLoader loader = entry.getTubeThumbnailLoader();
-                entry.setTubeThumbnailLoader(loader);*/
+                final VideoEntity entity = mDocumentary.get(position);
 
                 YouTubeThumbnailLoader loader = thumbnailViewToLoaderMap.get(holder.thumbnail);
                 if (loader == null) {
                     // 2) The view is already created, and is currently being initialized. We store the
                     //    current videoId in the tag.
-                    holder.thumbnail.setTag(entry.videoId);
+                    holder.thumbnail.setTag(entity.id);
                     //entry.setTubeThumbnailLoader(loader);
                 } else {
                     // 3) The view is already created and already initialized. Simply set the right videoId
                     //    on the loader.
                     holder.thumbnail.setImageResource(R.drawable.loading_thumbnail);
-                    loader.setVideo(entry.videoId);
+                    loader.setVideo(entity.id);
                 }
 
-                holder.label.setText(entry.text);
+                holder.label.setText(entity.name);
+                holder.tvTime.setText(entity.time);
 
                 if (pos == position) {
                     holder.itemLayout.setBackgroundResource(R.color.colorAccent);
@@ -475,9 +491,10 @@ public final class HomeActivity extends AppCompatActivity implements
                 holder.itemClickListener = new Holder.ItemClickListener() {
                     @Override
                     public void onItemClick() {
-                        mVideoFragment.setVideoId(entry.videoId);
+                        mVideoFragment.setVideoId(entity.id);
                         notifyItemChanged(pos);
                         pos = position;
+
                         holder.itemLayout.setBackgroundResource(R.color.colorAccent);
                     }
                 };
@@ -488,13 +505,20 @@ public final class HomeActivity extends AppCompatActivity implements
         @Override
         public int getItemCount() {
             //return 0;
-            return GlobalVideoList.VIDEO_LIST.size();
+            if(mDocumentary!=null)
+            {
+                return mDocumentary.size();
+            }
+            return 0;
         }
+
+
 
         public static class Holder extends RecyclerView.ViewHolder implements View.OnClickListener {
             ItemClickListener itemClickListener;
             YouTubeThumbnailView thumbnail;
             TextView label;
+            TextView tvTime;
             LinearLayout itemLayout;
 
             public Holder(View itemView) {
@@ -502,6 +526,7 @@ public final class HomeActivity extends AppCompatActivity implements
                 thumbnail = (YouTubeThumbnailView) itemView.findViewById(R.id.thumbnail);
                 thumbnail.initialize(DeveloperKey.DEVELOPER_KEY, thumbnailListener);
                 label = itemView.findViewById(R.id.video_name);
+                tvTime = itemView.findViewById(R.id.video_duration);
                 itemLayout = itemView.findViewById(R.id.item_layout);
                 itemView.setOnClickListener(this);
             }
@@ -606,6 +631,7 @@ public final class HomeActivity extends AppCompatActivity implements
                 }
 
                 holder.label.setText(entity.name);
+                holder.tvTime.setText(entity.time);
 
                 if (pos == position) {
                     holder.itemLayout.setBackgroundResource(R.color.colorAccent);
@@ -640,6 +666,7 @@ public final class HomeActivity extends AppCompatActivity implements
             ItemClickListener itemClickListener;
             YouTubeThumbnailView thumbnail;
             TextView label;
+            TextView tvTime;
             LinearLayout itemLayout;
 
             public Holder(View itemView) {
@@ -647,6 +674,7 @@ public final class HomeActivity extends AppCompatActivity implements
                 thumbnail = (YouTubeThumbnailView) itemView.findViewById(R.id.thumbnail);
                 thumbnail.initialize(DeveloperKey.DEVELOPER_KEY, thumbnailListener);
                 label = itemView.findViewById(R.id.video_name);
+                tvTime = itemView.findViewById(R.id.video_duration);
                 itemLayout = itemView.findViewById(R.id.item_layout);
                 itemView.setOnClickListener(this);
             }
@@ -974,7 +1002,7 @@ public final class HomeActivity extends AppCompatActivity implements
         public VideoEntry(String text, String videoId) {
             this.text = text;
             videoId = videoId.replace("https://www.youtube.com/watch?v=", "");
-            Log.d("Check", videoId);
+            //Log.d("Check", videoId);
             this.videoId = videoId;
         }
     }
@@ -1001,4 +1029,17 @@ public final class HomeActivity extends AppCompatActivity implements
         view.setLayoutParams(params);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(isFullscreen)
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            isFullscreen = false;
+            layout();
+        }
+        else {
+            super.onBackPressed();
+        }
+
+    }
 }

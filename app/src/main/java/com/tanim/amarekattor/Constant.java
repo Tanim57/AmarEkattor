@@ -5,6 +5,6 @@ package com.tanim.amarekattor;
  */
 
 public class Constant {
-    public final static String MOVIE = "movie";
-    public final static String DOCUMENTARY = "documentary";
+    public final static String MOVIE = "1";
+    public final static String DOCUMENTARY = "2";
 }
