@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.tanim.year71"
+        applicationId "com.tanim.amarekattor"
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
